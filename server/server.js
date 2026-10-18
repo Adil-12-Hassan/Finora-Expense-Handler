@@ -31,6 +31,16 @@ app.use(cors({
 app.use(express.json({ limit: '700kb' }));
 app.use(cookieParser());
 
+// Ensure DB is connected on every request (required for Vercel serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 // Root route
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -64,30 +74,35 @@ app.use((req, res) => {
 // Centralized error handler - must come last
 app.use(errorHandler);
 
-// Start server
-const startServer = async () => {
-    if (!process.env.JWT_SECRET) {
-        console.error('❌ JWT_SECRET is required. Add it to server/.env before starting the server.');
-        process.exit(1);
-    }
+// Start server (local dev only — Vercel uses the exported app instead)
+if (!process.env.VERCEL) {
+    const startServer = async () => {
+        if (!process.env.JWT_SECRET) {
+            console.error('❌ JWT_SECRET is required. Add it to server/.env before starting the server.');
+            process.exit(1);
+        }
 
-    try {
-        await connectDB();
-    } catch (error) {
-        console.error('❌ MongoDB connection failed:', error.message);
-        process.exit(1);
-    }
-    try {
-        const response = await redis.ping();
-        console.log('✅ Redis connected successfully:', response);
-    } catch (error) {
-        console.error('❌ Redis connection failed:', error.message);
-        process.exit(1);
-    }
+        try {
+            await connectDB();
+        } catch (error) {
+            console.error('❌ MongoDB connection failed:', error.message);
+            process.exit(1);
+        }
+        try {
+            const response = await redis.ping();
+            console.log('✅ Redis connected successfully:', response);
+        } catch (error) {
+            console.error('❌ Redis connection failed:', error.message);
+            process.exit(1);
+        }
 
-    app.listen(PORT, () => {
-        console.log(`🚀 Finora backend running on port ${PORT}.`);
-    });
-};
+        app.listen(PORT, () => {
+            console.log(`🚀 Finora backend running on port ${PORT}.`);
+        });
+    };
 
-startServer();
+    startServer();
+}
+
+// Export for Vercel serverless
+export default app;
