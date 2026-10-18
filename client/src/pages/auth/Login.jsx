@@ -24,7 +24,7 @@ const Login = () => {
         e.preventDefault()
         if (!validate()) return
         const ok = await login(form)
-        if (ok) navigate('/')
+        if (ok) navigate('/dashboard')
     }
 
     return (

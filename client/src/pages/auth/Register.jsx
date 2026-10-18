@@ -25,7 +25,7 @@ const Register = () => {
         e.preventDefault()
         if (!validate()) return
         const ok = await register(form)
-        if (ok) navigate('/')
+        if (ok) navigate('/dashboard')
     }
 
     return (
