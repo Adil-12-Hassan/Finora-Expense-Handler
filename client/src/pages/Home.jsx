@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/layout/ThemeToggle'
+import useAuthStore from '../store/useAuthStore'
 
 const features = [
     {
@@ -27,7 +28,10 @@ const features = [
     },
 ]
 
-const Home = () => (
+const Home = () => {
+    const { user } = useAuthStore()
+
+    return (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
         <header className="flex items-center justify-between px-5 sm:px-8 py-5 max-w-6xl mx-auto">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Finora home">
@@ -41,20 +45,32 @@ const Home = () => (
             </Link>
             <nav className="flex items-center gap-2 sm:gap-3">
                 <ThemeToggle />
-                <Link
-                    to="/login"
-                    className="px-3 py-2 text-sm font-medium rounded-xl transition-opacity hover:opacity-75"
-                    style={{ color: 'var(--color-text)' }}
-                >
-                    Sign in
-                </Link>
-                <Link
-                    to="/register"
-                    className="px-4 py-2 text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
-                    style={{ background: 'var(--color-accent)', color: '#fff' }}
-                >
-                    Get started
-                </Link>
+                {user ? (
+                    <Link
+                        to="/dashboard"
+                        className="px-4 py-2 text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
+                        style={{ background: 'var(--color-accent)', color: '#fff' }}
+                    >
+                        Go to Dashboard
+                    </Link>
+                ) : (
+                    <>
+                        <Link
+                            to="/login"
+                            className="px-3 py-2 text-sm font-medium rounded-xl transition-opacity hover:opacity-75"
+                            style={{ color: 'var(--color-text)' }}
+                        >
+                            Sign in
+                        </Link>
+                        <Link
+                            to="/register"
+                            className="px-4 py-2 text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
+                            style={{ background: 'var(--color-accent)', color: '#fff' }}
+                        >
+                            Get started
+                        </Link>
+                    </>
+                )}
             </nav>
         </header>
 
@@ -91,24 +107,37 @@ const Home = () => (
                             confident about your everyday finances.
                         </p>
                         <div className="flex flex-wrap items-center gap-3">
-                            <Link
-                                to="/register"
-                                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
-                                style={{ background: 'var(--color-accent)', color: '#fff' }}
-                            >
-                                Create your free account
-                                <ArrowRight size={16} />
-                            </Link>
-                            <Link
-                                to="/login"
-                                className="px-4 py-3 rounded-xl text-sm font-medium transition-opacity hover:opacity-75"
-                                style={{
-                                    color: 'var(--color-text)',
-                                    border: '1px solid var(--color-border)',
-                                }}
-                            >
-                                I already have an account
-                            </Link>
+                            {user ? (
+                                <Link
+                                    to="/dashboard"
+                                    className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                                    style={{ background: 'var(--color-accent)', color: '#fff' }}
+                                >
+                                    Go to Dashboard
+                                    <ArrowRight size={16} />
+                                </Link>
+                            ) : (
+                                <>
+                                    <Link
+                                        to="/register"
+                                        className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90"
+                                        style={{ background: 'var(--color-accent)', color: '#fff' }}
+                                    >
+                                        Create your free account
+                                        <ArrowRight size={16} />
+                                    </Link>
+                                    <Link
+                                        to="/login"
+                                        className="px-4 py-3 rounded-xl text-sm font-medium transition-opacity hover:opacity-75"
+                                        style={{
+                                            color: 'var(--color-text)',
+                                            border: '1px solid var(--color-border)',
+                                        }}
+                                    >
+                                        I already have an account
+                                    </Link>
+                                </>
+                            )}
                         </div>
                         <div className="flex flex-wrap gap-x-5 gap-y-2 pt-1">
                             {['Simple expense tracking', 'Category budgets', 'Clear reports'].map((item) => (
@@ -401,6 +430,7 @@ const Home = () => (
             </div>
         </footer>
     </div>
-)
+    )
+}
 
 export default Home
