@@ -9,11 +9,11 @@ import {
 import ThemeToggle from './ThemeToggle'
 
 const links = [
-    { to: '/', icon: LayoutDashboard, label: 'Home' },
-    { to: '/transactions', icon: ArrowLeftRight, label: 'Expenses' },
-    { to: '/reports', icon: BarChart2, label: 'Reports' },
-    { to: '/budgets', icon: Target, label: 'Budgets' },
-    { to: '/settings', icon: Settings, label: 'Settings' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Home' },
+    { to: '/dashboard/transactions', icon: ArrowLeftRight, label: 'Expenses' },
+    { to: '/dashboard/reports', icon: BarChart2, label: 'Reports' },
+    { to: '/dashboard/budgets', icon: Target, label: 'Budgets' },
+    { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
 const Navbar = () => {
@@ -29,7 +29,7 @@ const Navbar = () => {
                 <NavLink
                     key={to}
                     to={to}
-                    end={to === '/'}
+                    end={to === '/dashboard'}
                     className="flex flex-col items-center gap-1 px-2 py-1.5 rounded-xl transition-all"
                     style={({ isActive }) => ({
                         color: isActive ? 'var(--color-accent)' : 'var(--color-muted)',

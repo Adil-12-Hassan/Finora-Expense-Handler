@@ -12,11 +12,11 @@ import useAuthStore from '../../store/useAuthStore'
 import ThemeToggle from './ThemeToggle'
 
 const links = [
-    { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/transactions', icon: ArrowLeftRight, label: 'Transactions' },
-    { to: '/reports', icon: BarChart2, label: 'Reports' },
-    { to: '/budgets', icon: Target, label: 'Budgets' },
-    { to: '/settings', icon: Settings, label: 'Settings' },
+    { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/dashboard/transactions', icon: ArrowLeftRight, label: 'Transactions' },
+    { to: '/dashboard/reports', icon: BarChart2, label: 'Reports' },
+    { to: '/dashboard/budgets', icon: Target, label: 'Budgets' },
+    { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 
 const Sidebar = () => {
@@ -55,7 +55,7 @@ const Sidebar = () => {
                     <NavLink
                         key={to}
                         to={to}
-                        end={to === '/'}
+                        end={to === '/dashboard'}
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all"
                         style={({ isActive }) => ({
                             background: isActive ? 'var(--color-accent-soft)' : 'transparent',

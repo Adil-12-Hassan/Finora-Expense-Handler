@@ -1,7 +1,8 @@
 import User from '../models/User.model.js'
 import connectDB from '../config/db.js'
-import { generateToken, setTokenCookie } from '../utils/generateToken.js'
+import { generateToken, setTokenCookie, clearTokenCookie, TOKEN_EXPIRY_SECONDS } from '../utils/generateToken.js'
 import { validateProfileImage } from '../utils/profileImage.js'
+import redis from '../config/redis.js'
 
 // Register
 // POST /api/auth/register
@@ -32,14 +33,15 @@ export const register = async (req, res, next) => {
         // 3. Create user (password hashed via pre-save hook)
         const user = await User.create({ name, email, password })
 
-        // 4. Generate token and set cookie
+        // 4. Generate token — set cookie (web) and return raw token (Flutter/mobile)
         const token = generateToken(user._id)
         setTokenCookie(res, token)
 
-        // 5. Return user (no password)
+        // 5. Return user + token
         res.status(201).json({
             status: 'Success',
             message: 'Account created successfully',
+            token,
             user: {
                 _id: user._id,
                 name: user.name,
@@ -86,14 +88,15 @@ export const login = async (req, res, next) => {
             })
         }
 
-        // 4. Generate token and set cookie
+        // 4. Generate token — set cookie (web) and return raw token (Flutter/mobile)
         const token = generateToken(user._id)
         setTokenCookie(res, token)
 
-        // 5. Return user
+        // 5. Return user + token
         res.status(200).json({
             status: 'Success',
             message: 'Logged in successfully',
+            token,
             user: {
                 _id: user._id,
                 name: user.name,
@@ -109,19 +112,45 @@ export const login = async (req, res, next) => {
 
 // Logout
 // POST /api/auth/logout
+// Works for both cookie (web) and Bearer token (Flutter)
+// Blacklists the token in Redis so it cannot be reused
 
-export const logout = (req, res) => {
-    res.clearCookie('token', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        path: '/',
-    })
+export const logout = async (req, res) => {
+    try {
+        // Extract token from cookie or Authorization header
+        let token = req.cookies?.token
+        if (!token) {
+            const authHeader = req.headers['authorization']
+            if (authHeader && authHeader.startsWith('Bearer ')) {
+                token = authHeader.slice(7)
+            }
+        }
 
-    res.status(200).json({
-        status: 'Success',
-        message: 'Logged out successfully',
-    })
+        // Blacklist the token in Redis until it naturally expires
+        if (token) {
+            await redis.set(
+                `blacklist:${token}`,
+                '1',
+                'EX',
+                TOKEN_EXPIRY_SECONDS
+            )
+        }
+
+        // Clear the cookie for web clients
+        clearTokenCookie(res)
+
+        res.status(200).json({
+            status: 'Success',
+            message: 'Logged out successfully',
+        })
+    } catch {
+        // Even if Redis fails, clear the cookie and respond
+        clearTokenCookie(res)
+        res.status(200).json({
+            status: 'Success',
+            message: 'Logged out successfully',
+        })
+    }
 }
 
 // Get Me
