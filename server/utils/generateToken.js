@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken'
 
+// Keep in sync with JWT_EXPIRES_IN env — used for Redis blacklist TTL
+export const TOKEN_EXPIRY_SECONDS = 7 * 24 * 60 * 60 // 7 days
+
 export const generateToken = (userId) => {
     return jwt.sign({ userId }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d'
@@ -13,6 +16,15 @@ export const setTokenCookie = (res, token) => {
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'strict',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: TOKEN_EXPIRY_SECONDS * 1000
+    })
+}
+
+export const clearTokenCookie = (res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        path: '/',
     })
 }
