@@ -19,12 +19,18 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-const clientOrigin = process.env.CLIENT_URL
-    ?.trim()
-    .replace(/\/+$/, '');
-
+const allowedOrigins = [
+    'https://finora-expense-hanlder.vercel.app',
+];
 app.use(cors({
-    origin: clientOrigin,
+    origin(origin, callback) {
+        const isLocalDev =
+            origin && /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+        if (!origin || allowedOrigins.includes(origin) || isLocalDev) {
+            return callback(null, true);
+        }
+        return callback(new Error(`Origin not allowed by CORS: ${origin}`));
+    },
     credentials: true,
 }));
 
