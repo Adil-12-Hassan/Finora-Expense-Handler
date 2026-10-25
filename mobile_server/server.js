@@ -21,6 +21,16 @@ app.use(async (req, res, next) => {
 app.get('/', (_, res) => res.json({ status: 'Success', message: 'Finora Mobile API is running.' }))
 app.get('/api/health', (_, res) => res.json({ status: 'Success', message: 'Healthy.' }))
 
+// Add this with your other routes
+app.get('/api/version', (req, res) => {
+    res.json({
+        latestVersion: "1.1", // change this when you release a new APK
+        minVersion: "1.0",  // force update if below this
+        downloadUrl: "https://github.com/Adil-12-Hassan/Finora-Expense-Handler/releases/download/v1.1/Finora-v1.1.apk",
+        releaseNotes: "Bug fixes and performance improvements."
+    })
+})
+
 app.use('/api/auth', authRoutes)
 app.use('/api/expenses', expenseRoutes)
 app.use('/api/budgets', budgetRoutes)
