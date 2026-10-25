@@ -26,7 +26,7 @@ app.get('/api/version', (req, res) => {
     res.json({
         latestVersion: "1.1", // change this when you release a new APK
         minVersion: "1.0",  // force update if below this
-        downloadUrl: "https://github.com/Adil-12-Hassan/Finora-Expense-Handler/releases/download/v1.1/Finora-v1.1.apk",
+        downloadUrl: "https://raw.githubusercontent.com/Adil-12-Hassan/Finora-Expense-Handler/main/releases/dowload/v1.1/Finora-v1.1.apk",
         releaseNotes: "Bug fixes and performance improvements."
     })
 })
