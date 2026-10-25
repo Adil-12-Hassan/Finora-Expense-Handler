@@ -2,12 +2,68 @@ import {
     ArrowRight,
     BarChart3,
     Check,
+    Download,
     Receipt,
+    Smartphone,
     Target,
     Wallet,
+    X,
 } from 'lucide-react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ThemeToggle from '../components/layout/ThemeToggle'
+
+const APK_URL =
+    'https://raw.githubusercontent.com/Adil-12-Hassan/Finora-Expense-Handler/main/releases/dowload/v1.1/Finora-v1.1.apk'
+
+function AppBanner() {
+    const [dismissed, setDismissed] = useState(() => {
+        try {
+            return localStorage.getItem('finora_app_banner_dismissed') === '1'
+        } catch {
+            return false
+        }
+    })
+
+    if (dismissed) return null
+
+    const handleDismiss = () => {
+        try {
+            localStorage.setItem('finora_app_banner_dismissed', '1')
+        } catch {
+            // ignore
+        }
+        setDismissed(true)
+    }
+
+    return (
+        <div
+            className="w-full px-4 py-2.5 flex items-center justify-between gap-3"
+            style={{ background: 'var(--color-accent)', color: '#fff' }}
+        >
+            <div className="flex items-center gap-2.5 min-w-0">
+                <Smartphone size={16} className="shrink-0" />
+                <span className="text-sm font-medium truncate">
+                    Finora is now on Android —{' '}
+                    <a
+                        href={APK_URL}
+                        download
+                        className="underline underline-offset-2 font-semibold hover:opacity-80 transition-opacity"
+                    >
+                        Download the app
+                    </a>
+                </span>
+            </div>
+            <button
+                onClick={handleDismiss}
+                aria-label="Dismiss"
+                className="shrink-0 opacity-80 hover:opacity-100 transition-opacity"
+            >
+                <X size={16} />
+            </button>
+        </div>
+    )
+}
 
 const features = [
     {
@@ -29,6 +85,7 @@ const features = [
 
 const Home = () => (
     <div className="min-h-screen" style={{ background: 'var(--color-bg)' }}>
+        <AppBanner />
         <header className="flex items-center justify-between px-5 sm:px-8 py-5 max-w-6xl mx-auto">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Finora home">
                 <img src="/favicon.svg" alt="" className="w-9 h-9 rounded-xl" />
@@ -268,6 +325,83 @@ const Home = () => (
                 </div>
             </section>
 
+            {/* Android App Download Section */}
+            <section className="px-5 sm:px-8 py-16 max-w-6xl mx-auto">
+                <div
+                    className="rounded-3xl px-6 py-10 sm:px-10 sm:py-12 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8"
+                    style={{
+                        background: 'var(--color-surface)',
+                        border: '1px solid var(--color-border)',
+                    }}
+                >
+                    <div className="flex items-start gap-5">
+                        <div
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                            style={{
+                                background: 'var(--color-accent-soft)',
+                                color: 'var(--color-accent)',
+                            }}
+                        >
+                            <Smartphone size={26} />
+                        </div>
+                        <div>
+                            <span
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium mb-2"
+                                style={{
+                                    background: 'var(--color-accent-soft)',
+                                    color: 'var(--color-accent)',
+                                }}
+                            >
+                                <span
+                                    className="w-1.5 h-1.5 rounded-full"
+                                    style={{ background: 'var(--color-accent)' }}
+                                />
+                                Now available
+                            </span>
+                            <h2
+                                className="text-xl sm:text-2xl font-bold"
+                                style={{
+                                    fontFamily: 'var(--font-display)',
+                                    color: 'var(--color-text)',
+                                }}
+                            >
+                                Take Finora with you
+                            </h2>
+                            <p className="text-sm mt-1.5 max-w-md" style={{ color: 'var(--color-muted)' }}>
+                                The full Finora experience on your Android device — track expenses,
+                                manage budgets, and stay in sync wherever you are.
+                            </p>
+                            <div className="flex flex-wrap gap-x-5 gap-y-1.5 mt-3">
+                                {['Offline support', 'Syncs with your account', 'Free to install'].map((item) => (
+                                    <span
+                                        key={item}
+                                        className="inline-flex items-center gap-1.5 text-xs"
+                                        style={{ color: 'var(--color-muted)' }}
+                                    >
+                                        <Check size={13} style={{ color: 'var(--color-green)' }} />
+                                        {item}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex flex-col gap-2 shrink-0">
+                        <a
+                            href={APK_URL}
+                            download
+                            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 whitespace-nowrap"
+                            style={{ background: 'var(--color-accent)', color: '#fff' }}
+                        >
+                            <Download size={16} />
+                            Download APK
+                        </a>
+                        <p className="text-center text-xs" style={{ color: 'var(--color-muted)' }}>
+                            Android · v1.1 · Free
+                        </p>
+                    </div>
+                </div>
+            </section>
+
             <section className="px-5 sm:px-8 py-16 max-w-6xl mx-auto">
                 <div
                     className="rounded-3xl px-6 py-10 sm:px-10 sm:py-12 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
@@ -359,6 +493,14 @@ const Home = () => (
                             >
                                 Get started
                             </Link>
+                            <a
+                                href={APK_URL}
+                                download
+                                className="text-sm hover:opacity-75 transition-opacity"
+                                style={{ color: 'var(--color-muted)' }}
+                            >
+                                Android app
+                            </a>
                         </div>
                     </div>
 
